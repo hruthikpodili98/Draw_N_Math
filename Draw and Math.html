@@ -1,0 +1,319 @@
+<html>
+    <script type="text/javascript">
+
+    var canvas, ctx, flag = false,
+        prevX = 0,
+        currX = 0,
+        prevY = 0,
+        currY = 0,
+        dot_flag = false;
+
+    var x = "black",
+        y = 2;
+    var check = 0;
+
+    var isDown=false;
+    var canvasOffset;
+    var offsetX;
+    var offsetY;
+    var startX;
+    var startY;
+    var highlight = 'circle';
+    
+    function init() {   //Line
+        reset();
+        canvas = document.getElementById('can');
+        w = canvas.width;
+        h = canvas.height;
+        canvas2 = canvas.cloneNode(true);
+        canvas.parentNode.replaceChild(canvas2,canvas);
+        ctx = canvas2.getContext("2d");
+        check = 0;
+        document.getElementById(highlight).style.background='';
+        highlight = "line";
+        document.getElementById(highlight).style.background='#71de18';
+        canvas2.addEventListener("mousemove", function (e) {
+            findxy('move', e)
+        }, false);
+        canvas2.addEventListener("mousedown", function (e) {
+            findxy('down', e)
+        }, false);
+        canvas2.addEventListener("mouseup", function (e) {
+            findxy('up', e)
+        }, false);
+        canvas2.addEventListener("mouseout", function (e) {
+            findxy('out', e)
+        }, false);
+    }
+
+    function init1() {
+       
+        canvas = document.getElementById('can');
+        canvas2 = canvas.cloneNode(true);
+        canvas.parentNode.replaceChild(canvas2,canvas);
+        ctx = canvas2.getContext("2d");
+        canvasOffset=$("#can").offset();
+        offsetX=canvasOffset.left;
+        offsetY=canvasOffset.top;
+        w = canvas2.width;
+        h = canvas2.height;
+        check = 0;
+        document.getElementById(highlight).style.background='';
+        highlight = "circle";
+        document.getElementById(highlight).style.background='#71de18';
+        reset();
+        canvas2.addEventListener("mousemove", function (e) {
+            handleMouseMove(e)
+        }, false);
+        canvas2.addEventListener("mousedown", function (e) {
+            handleMouseDown(e)
+        }, false);
+        canvas2.addEventListener("mouseup", function (e) {
+             handleMouseUp(e)
+        }, false);
+        canvas2.addEventListener("mouseout", function (e) {
+        handleMouseOut(e)
+        }, false);
+    }
+
+ function init2() {
+        check = 1;
+        canvas = document.getElementById('can');
+        canvas2 = canvas.cloneNode(true);
+        canvas.parentNode.replaceChild(canvas2,canvas);
+        ctx = canvas2.getContext("2d");
+        canvasOffset=$("#can").offset();
+        offsetX=canvasOffset.left;
+        offsetY=canvasOffset.top;
+        w = canvas2.width;
+        h = canvas2.height;
+        reset();
+                  document.getElementById(highlight).style.background='';
+
+        highlight = "MathEquation";
+          document.getElementById("math").focus();
+
+          document.getElementById(highlight).style.background='#71de18';
+
+
+
+    }
+    function reset(){
+    var resetButton = document.getElementById("math");
+    if(resetButton){
+        resetButton.value= "";
+   }
+}
+    window.onload=function(){
+        function draw(event) {
+
+            if(check){
+                var canvas = document.getElementById("can");
+                var ctx = canvas.getContext("2d");
+                var text = document.getElementById('math').value
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#3e3e3e";
+                ctx.font = "16px Arial";
+                ctx.fillText(text, 50, 50);
+            }
+        }
+        window.addEventListener("keyup", draw, true);
+        window.addEventListener("click", draw, true);
+
+    }
+
+     function erase() {
+        var m = confirm("Want to clear");
+        if (m) {
+            ctx.clearRect(0, 0, w, h);
+            document.getElementById("canvasimg").style.display = "none";
+        }
+    }
+    function appendSymbol(symbol) {
+                  document.getElementById("math").focus();
+
+    let currentData = document.getElementById("math").value;
+    console.log(currentData);
+    currentData += symbol;
+    document.getElementById("math").value = currentData;
+    if(check){
+                var canvas = document.getElementById("can");
+                var ctx = canvas.getContext("2d");
+                var text = document.getElementById('math').value
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#3e3e3e";
+                ctx.font = "16px Arial";
+                ctx.fillText(text, 50, 50);
+            }
+    }
+
+      function handleMouseOut(e){
+      if(!isDown){ return; }
+      e.preventDefault();
+      e.stopPropagation();
+      isDown=false;
+    }
+
+     function handleMouseMove(e){
+      if(!isDown){ return; }
+      e.preventDefault();
+      e.stopPropagation();
+      mouseX=parseInt(e.clientX-offsetX);
+      mouseY=parseInt(e.clientY-offsetY);
+      drawOval(mouseX,mouseY);
+    }
+     function handleMouseDown(e){
+      e.preventDefault();
+      e.stopPropagation();
+      startX=parseInt(e.clientX-offsetX);
+      startY=parseInt(e.clientY-offsetY);
+      isDown=true;
+    }
+
+     function handleMouseUp(e){
+      if(!isDown){ return; }
+      e.preventDefault();
+      e.stopPropagation();
+      isDown=false;
+    }
+    function color(obj) {
+        switch (obj.id) {
+            case "green":
+                x = "green";
+                break;
+            case "blue":
+                x = "blue";
+                break;
+            case "red":
+                x = "red";
+                break;
+            case "yellow":
+                x = "yellow";
+                break;
+            case "orange":
+                x = "orange";
+                break;
+            case "black":
+                x = "black";
+                break;
+            case "white":
+                x = "white";
+                break;
+        }
+        if (x == "white") y = 14;
+        else y = 2;
+    
+    }
+    
+    function draw() {
+       document.getElementById("math").focus();
+
+        ctx.beginPath();
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(currX, currY);
+        ctx.strokeStyle = x;
+        ctx.lineWidth = y;
+        ctx.stroke();
+        ctx.closePath();
+    }
+    
+
+    
+    
+    function findxy(res, e) {
+        if (res == 'down') {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - canvas.offsetLeft-76;
+            currY = e.clientY - canvas.offsetTop-76;
+    
+            flag = true;
+            dot_flag = true;
+            if (dot_flag) {
+                ctx.beginPath();
+                ctx.fillStyle = x;
+                ctx.fillRect(currX, currY, 2, 2);
+                ctx.closePath();
+                dot_flag = false;
+            }
+        }
+        if (res == 'up' || res == "out") {
+            flag = false;
+        }
+        if (res == 'move') {
+            if (flag) {
+                prevX = currX;
+                prevY = currY;
+                currX = e.clientX - canvas.offsetLeft-76;
+                currY = e.clientY - canvas.offsetTop-76;
+                draw();
+            }
+        }
+    }
+     function drawOval(x,y){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(startX, startY + (y-startY)/2);
+        ctx.bezierCurveTo(startX, startY, x, startY, x, startY + (y-startY)/2);
+        ctx.bezierCurveTo(x, y, startX, y, startX, startY + (y-startY)/2);
+        ctx.closePath();
+        ctx.stroke();
+    }
+    
+    </script>
+
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+
+    <body ><!--onload="init()">-->
+        <p align="center">
+        <canvas id="can" width="500" height="600" style=" position:absolute;top:10%;left:5%; border:2px solid;"></canvas>
+    </p>
+        <div style="position:absolute;top:12%;left:43%;">Choose Color</div>
+        <div style="position:absolute;top:15%;left:45%;width:20px;height:20px;background:green;" id="green" onclick="color(this)"></div>
+        <div style="position:absolute;top:15%;left:47%;width:20px;height:20px;background:blue;" id="blue" onclick="color(this)"></div>
+        <div style="position:absolute;top:15%;left:49%;width:20px;height:20px;background:red;" id="red" onclick="color(this)"></div>
+        <div style="position:absolute;top:19%;left:45%;width:20px;height:20px;background:yellow;" id="yellow" onclick="color(this)"></div>
+        <div style="position:absolute;top:19%;left:47%;width:20px;height:20px;background:orange;" id="orange" onclick="color(this)"></div>
+        <div style="position:absolute;top:19%;left:49%;width:20px;height:20px;background:black;" id="black" onclick="color(this)"></div>
+        <div style="position:absolute;top:30%;left:70%; font-family: cursive; font-size: 40">Draw n Math...!!!</div>
+
+        <!--<div style="position:absolute;top:20%;left:43%;">Eraser</div>
+        <div style="position:absolute;top:22%;left:45%;width:15px;height:15px;background:white;border:2px solid;" id="white" onclick="color(this)"></div>-->
+        <img id="canvasimg" style="position:absolute;top:10%;left:52%;" style="display:none;">
+        <!--<input type="button" value="save" id="save" size="30" onclick="save()" style="position:absolute;top:70%;left:15%;">-->
+        <input type="button" value="Clear" id="clr" size="23" onclick="erase()" style="position:absolute;top:80%;left:45%;">
+        <input id="circle" type="button" value="Circle" onclick="init1();" />
+        <input id="line" type="button" value="Line" onclick="init();" />
+        <input id="MathEquation" type="button" value="Equation" onclick=" init2();" />
+        <input type="text" autocomplete="off" id="math" style="color: transparent;">
+        <button onclick="appendSymbol('+')">+</button>
+
+        <button onclick="appendSymbol('-')">-</button>
+        <button onclick="appendSymbol('*')">*</button>
+        <button onclick="appendSymbol('/')">/</button>
+        <button onclick="appendSymbol('=')">=</button>
+        <button onclick="appendSymbol('{')">{</button>
+        <button onclick="appendSymbol('}')">}</button>
+        <button onclick="appendSymbol('[')">[</button>
+        <button onclick="appendSymbol(']')">]</button>
+        <button onclick="appendSymbol('(')">(</button>
+        <button onclick="appendSymbol(')')">)</button>
+        <button onclick="appendSymbol('&#8706')">&#8706</button>
+        <button onclick="appendSymbol('&#8721')">&#8721</button>
+        <button onclick="appendSymbol('&#8719')">&#8719</button>
+        <button onclick="appendSymbol('&#8730')">&#8730</button>
+        <button onclick="appendSymbol('&#8752')">&#8752</button>
+        <button onclick="appendSymbol('&#8731')">&#8731</button>
+        <button onclick="appendSymbol('&#8748')">&#8748</button>
+        <button onclick="appendSymbol('&#8752')">&#8752</button>
+        <button onclick="appendSymbol('&#8747')">&#8747</button>
+
+        <img src="bg.jpeg" align="right" >
+
+                <img src="logo.jpeg" align="right" >
+
+
+
+    </body>
+    </html>
